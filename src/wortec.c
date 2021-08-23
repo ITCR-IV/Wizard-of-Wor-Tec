@@ -39,12 +39,42 @@ SDL_Renderer *renderer;		//The renderer SDL will use to draw to the screen
 
 //surfaces
 static SDL_Surface *screen;
+static SDL_Surface *spacebg;
 static SDL_Surface *title;
 static SDL_Surface *numbermap;
 static SDL_Surface *end;
 
 //textures
 SDL_Texture *screen_texture;
+
+
+SDL_Surface* loadSurface(char img[])
+{
+	//The final adjusted image
+	SDL_Surface* adjustedSurface;
+	
+	char path[strlen("../imgs/")+strlen(img)];
+
+	strcpy(path, "../imgs/");
+
+	SDL_Surface* loadedImg = IMG_Load(strcat(path,img));
+	if(!loadedImg) {
+		printf("Unable to load image %s!\nSDL_image Error: %s\n", img, IMG_GetError());
+		return NULL;
+	}
+	else {
+		// Turn newly loaded image surface to screen surface format to avoid conversions in the future
+		adjustedSurface = SDL_ConvertSurface(loadedImg, screen->format, 0);
+		if(adjustedSurface == NULL) {
+			printf("Unable to adjust image %s! SDL Error: %s\n", img, SDL_GetError());
+		}
+
+		//Remember to free the initial surface
+		SDL_FreeSurface(loadedImg);
+	}
+
+	return adjustedSurface;
+}
 
 //inisilise starting position and sizes of game elemements
 static void init_game() {
@@ -385,6 +415,16 @@ static void draw_game_over(int p) {
 	
 }
 
+void draw_bg(){
+	SDL_Rect src;
+	SDL_Rect dest;
+
+	src.x = 0; src.y = 0; src.w = spacebg->w; src.h = spacebg->h;
+	dest.x = 0; dest.y = 0; dest.w = screen->w; dest.h = screen->h;
+
+	SDL_BlitSurface(spacebg, &src, screen, &dest);
+}
+
 static void draw_menu() {
 
 	SDL_Rect src;
@@ -578,7 +618,8 @@ int main (int argc, char *args[]) {
 		
 		//draw background
 		SDL_RenderClear(renderer);
-		SDL_FillRect(screen, NULL, 0x000000ff);
+		//SDL_FillRect(screen, NULL, 0x000000ff);
+		draw_bg();
 		
 		//display main menu
 		if (state == 0 ) {
@@ -677,6 +718,7 @@ int main (int argc, char *args[]) {
 	SDL_FreeSurface(title);
 	SDL_FreeSurface(numbermap);
 	SDL_FreeSurface(end);
+	SDL_FreeSurface(spacebg);
 
 	//free renderer and all textures used with it
 	SDL_DestroyRenderer(renderer);
@@ -704,7 +746,7 @@ int init(int width, int height, int argc, char *args[]) {
 	int i;
 	
 	for (i = 0; i < argc; i++) {
-		
+		//
 		//Create window	
 		if(strcmp(args[i], "-f")) {
 			
@@ -742,6 +784,9 @@ int init(int width, int height, int argc, char *args[]) {
 
 		return 1;
 	}
+
+	//Load the space bg
+	spacebg = loadSurface("space_bg.png");
 
 	//Load the title image
 	title = SDL_LoadBMP("title.bmp");
@@ -781,25 +826,3 @@ int init(int width, int height, int argc, char *args[]) {
 	return 0;
 }
 
-SDL_Surface* loadSurface(char img[])
-{
-	//The final adjusted image
-	SDL_Surface* adjustedSurface;
-
-	SDL_Surface* loadedImg = IMG_Load(strcat("../imgs/",img));
-	if(loadedImg == NULL) {
-		printf("Unable to load image %s! SDL_image Error: %s\n", img, IMG_GetError());
-	}
-	else {
-		// Turn newly loaded image surface to screen surface format to avoid conversions in the future
-		adjustedSurface = SDL_ConvertSurface(loadedImg, screen->format, 0);
-		if(adjustedSurface == NULL) {
-			printf("Unable to adjust image %s! SDL Error: %s\n", img, SDL_GetError());
-		}
-
-		//Remember to free the initial surface
-		SDL_FreeSurface(loadedImg);
-	}
-
-	return adjustedSurface;
-}

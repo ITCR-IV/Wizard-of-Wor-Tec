@@ -151,7 +151,7 @@ void draw_walls(SDL_Surface *screen, int lvl) {
 	src.w = BaseLvlPtr[i].w;
 	src.h = BaseLvlPtr[i].h;
 	
-	int r = SDL_FillRect(screen , &src, 0xffffffff);
+	int r = SDL_FillRect(screen , &src, SDL_MapRGB(screen->format, 28, 87, 254));
 
 	if (r !=0){
 		printf("fill rectangle faliled in func draw_walls() in first iteration #%d", i);
@@ -178,7 +178,7 @@ void draw_walls(SDL_Surface *screen, int lvl) {
 	src.w = LabyrinthPtr[i].w;
 	src.h = LabyrinthPtr[i].h;
 	
-	int r = SDL_FillRect(screen , &src, 0xffffffff);
+	int r = SDL_FillRect(screen , &src, SDL_MapRGB(screen->format, 28, 87, 254));
 
 	if (r !=0){
 		printf("fill rectangle faliled in func draw_walls() in second iteration #%s", i);
