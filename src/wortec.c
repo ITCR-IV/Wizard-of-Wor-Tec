@@ -1,6 +1,7 @@
 //Using libs SDL, glibc
 #include <SDL.h>	//SDL version 2.0
 #include <SDL_image.h>
+#include "SDL_helpers.h" //my own code
 #include <stdlib.h>
 #include <stdio.h>
 
@@ -40,6 +41,8 @@ SDL_Renderer *renderer;		//The renderer SDL will use to draw to the screen
 //surfaces
 static SDL_Surface *screen;
 static SDL_Surface *spacebg;
+static SDL_Surface *playerSprite;
+static SDL_Surface *monstersSheet;
 static SDL_Surface *title;
 static SDL_Surface *numbermap;
 static SDL_Surface *end;
@@ -47,36 +50,7 @@ static SDL_Surface *end;
 //textures
 SDL_Texture *screen_texture;
 
-
-SDL_Surface* loadSurface(char img[])
-{
-	//The final adjusted image
-	SDL_Surface* adjustedSurface;
-	
-	char path[strlen("../imgs/")+strlen(img)];
-
-	strcpy(path, "../imgs/");
-
-	SDL_Surface* loadedImg = IMG_Load(strcat(path,img));
-	if(!loadedImg) {
-		printf("Unable to load image %s!\nSDL_image Error: %s\n", img, IMG_GetError());
-		return NULL;
-	}
-	else {
-		// Turn newly loaded image surface to screen surface format to avoid conversions in the future
-		adjustedSurface = SDL_ConvertSurface(loadedImg, screen->format, 0);
-		if(adjustedSurface == NULL) {
-			printf("Unable to adjust image %s! SDL Error: %s\n", img, SDL_GetError());
-		}
-
-		//Remember to free the initial surface
-		SDL_FreeSurface(loadedImg);
-	}
-
-	return adjustedSurface;
-}
-
-//inisilise starting position and sizes of game elemements
+//initialize starting position and sizes of game elemements
 static void init_game() {
 	
 	ball.x = screen->w / 2;
@@ -719,6 +693,8 @@ int main (int argc, char *args[]) {
 	SDL_FreeSurface(numbermap);
 	SDL_FreeSurface(end);
 	SDL_FreeSurface(spacebg);
+	SDL_FreeSurface(playerSprite);
+	SDL_FreeSurface(monstersSheet);
 
 	//free renderer and all textures used with it
 	SDL_DestroyRenderer(renderer);
@@ -786,7 +762,13 @@ int init(int width, int height, int argc, char *args[]) {
 	}
 
 	//Load the space bg
-	spacebg = loadSurface("space_bg.png");
+	spacebg = loadSurface(screen, "space_bg.png");
+
+	//Load the player sprite
+	playerSprite = loadSurface(screen, "player.png");
+
+	//Load the enemies spritesheet
+	monstersSheet = loadSurface(screen, "monsters.png");
 
 	//Load the title image
 	title = SDL_LoadBMP("title.bmp");

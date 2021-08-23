@@ -7,10 +7,10 @@ LDIR =../lib
 
 LIBS=-lm
 
-_DEPS = wall.h
+_DEPS = wall.h SDL_helpers.h
 DEPS = $(patsubst %,$(IDIR)/%,$(_DEPS))
 
-_OBJ = wortec.o wall.o
+_OBJ = wortec.o wall.o SDL_helpers.o
 OBJ = $(patsubst %,$(ODIR)/%,$(_OBJ))
 
 #$(info $$OBJ/%.o is [${OBJ}])
