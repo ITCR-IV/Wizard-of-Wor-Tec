@@ -1,11 +1,15 @@
-
 //Using libs SDL, glibc
 #include <SDL.h>	//SDL version 2.0
+#include <SDL_image.h>
 #include <stdlib.h>
 #include <stdio.h>
 
-#define SCREEN_WIDTH 640	//window height
-#define SCREEN_HEIGHT 480	//window width
+//Game elements
+#include "wall.h"
+
+
+#define SCREEN_WIDTH 1080	//window height
+#define SCREEN_HEIGHT 720	//window width
 
 //function prototypes
 //initilise SDL
@@ -425,12 +429,12 @@ static void draw_net() {
 	net.x = screen->w / 2;
 	net.y = 20;
 	net.w = 5;
-	net.h = 15;
+	net.h = screen->h/32;
 
 	//draw the net
 	int i,r;
 
-	for(i = 0; i < 15; i++) {
+	for(i = 0; i < screen->h/30; i++) {
 		
 		r = SDL_FillRect(screen, &net, 0xffffffff);
 	
@@ -545,6 +549,9 @@ int main (int argc, char *args[]) {
 	
 	// Initialize the ball position data. 
 	init_game();
+
+	// Initialize first level
+	init_labyrinth(1);
 	
 	//render loop
 	while(quit == 0) {
@@ -577,15 +584,16 @@ int main (int argc, char *args[]) {
 		if (state == 0 ) {
 		
 			if (keystate[SDL_SCANCODE_SPACE]) {
-				
 				state = 1;
+				//Initialize labyrinth
+				reset_labyrinth(state);
 			}
 		
 			//draw menu 
 			draw_menu();
 		
 		//display gameover
-		} else if (state == 2) {
+		} else if (state == -1) {
 		
 			if (keystate[SDL_SCANCODE_SPACE]) {
 				state = 0;
@@ -606,7 +614,7 @@ int main (int argc, char *args[]) {
 			}
 				
 		//display the game
-		} else if (state == 1) {
+		} else if (state >= 1) {
 			
 			//check score
 			r = check_score();
@@ -614,33 +622,35 @@ int main (int argc, char *args[]) {
 			//if either player wins, change to game over state
 			if (r == 1) {
 				
-				state = 2;	
+				state = -1;	
 
 			} else if (r == 2) {
 			
-				state = 2;	
+				state = -1;	
 			}
 
 			//paddle ai movement
-			move_paddle_ai();
+			//move_paddle_ai();
 
 			//* Move the balls for the next frame. 
-			move_ball();
+			//move_ball();
 			
+			//draw level
+			draw_walls(screen, state);
 			//draw net
-			draw_net();
+			//draw_net();
 
 			//draw paddles
-			draw_paddle();
+			//draw_paddle();
 			
 			//* Put the ball on the screen.
-			draw_ball();
+			//draw_ball();
 	
 			//draw the score
-			draw_player_0_score();
+			//draw_player_0_score();
 	
 			//draw the score
-			draw_player_1_score();
+			//draw_player_1_score();
 		}
 	
 		SDL_UpdateTexture(screen_texture, NULL, screen->pixels, screen->w * sizeof (Uint32));
@@ -658,6 +668,9 @@ int main (int argc, char *args[]) {
 			SDL_Delay(sleep);
 		}
 	}
+
+	//free level data
+	terminate_labyrinth();
 
 	//free loaded images
 	SDL_FreeSurface(screen);
@@ -766,4 +779,27 @@ int init(int width, int height, int argc, char *args[]) {
 	SDL_SetColorKey(numbermap, SDL_TRUE, colorkey);
 	
 	return 0;
+}
+
+SDL_Surface* loadSurface(char img[])
+{
+	//The final adjusted image
+	SDL_Surface* adjustedSurface;
+
+	SDL_Surface* loadedImg = IMG_Load(strcat("../imgs/",img));
+	if(loadedImg == NULL) {
+		printf("Unable to load image %s! SDL_image Error: %s\n", img, IMG_GetError());
+	}
+	else {
+		// Turn newly loaded image surface to screen surface format to avoid conversions in the future
+		adjustedSurface = SDL_ConvertSurface(loadedImg, screen->format, 0);
+		if(adjustedSurface == NULL) {
+			printf("Unable to adjust image %s! SDL Error: %s\n", img, SDL_GetError());
+		}
+
+		//Remember to free the initial surface
+		SDL_FreeSurface(loadedImg);
+	}
+
+	return adjustedSurface;
 }
