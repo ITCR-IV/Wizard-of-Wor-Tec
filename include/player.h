@@ -24,13 +24,6 @@ void reset_player();
 
 void draw_player(SDL_Surface *screen, SDL_Surface *sprite);
 
-void move_player(enum Direction d);
-
-void check_collision_pw();
-
-
-
-
-
+void move_player(enum Direction d, int lvl);
 
 #endif

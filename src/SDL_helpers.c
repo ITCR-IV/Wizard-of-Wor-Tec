@@ -46,3 +46,12 @@ bool checkSDLCollision(SDL_Rect rect1, SDL_Rect rect2){
 	}
 	return collideX&&collideY;
 }
+
+SDL_Rect instantiateRect(int x, int y, int w, int h){
+	SDL_Rect rect;
+	rect.x=x;
+	rect.y=y;
+	rect.w=w;
+	rect.h=h;
+	return rect;
+}

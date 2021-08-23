@@ -7,6 +7,7 @@
 
 //Game elements
 #include "wall.h"
+#include "player.h"
 
 
 #define SCREEN_WIDTH 1080	//window height
