@@ -1,6 +1,9 @@
 #ifndef WALL_H
 #define WALL_H
 
+#include <SDL.h>	//SDL version 2.0
+#include <stdbool.h>
+
 typedef struct wall_s {
 	int x,y;
 	int w,h;
@@ -17,6 +20,7 @@ void terminate_labyrinth();
 
 void reset_labyrinth(int lvl);
 
-void draw_walls(); 
+void draw_walls(SDL_Surface *screen, int lvl);
 
+bool check_collision_walls(int lvl, SDL_Rect rect);
 #endif

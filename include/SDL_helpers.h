@@ -6,6 +6,6 @@
 
 SDL_Surface* loadSurface(SDL_Surface *screen, char img[]);
 
-bool checkCollision(SDL_Rect rect1, SDL_Rect rect2);
+bool checkSDLCollision(SDL_Rect rect1, SDL_Rect rect2);
 
 #endif

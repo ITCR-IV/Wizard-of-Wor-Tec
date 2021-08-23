@@ -1,6 +1,6 @@
-#include <SDL.h>	//SDL version 2.0
 #include <stdlib.h>
 #include <stdio.h>
+#include "SDL_helpers.h"
 #include "wall.h"
 
 
@@ -183,4 +183,41 @@ void draw_walls(SDL_Surface *screen, int lvl) {
 	if (r !=0){
 		printf("fill rectangle faliled in func draw_walls() in second iteration #%s", i);
 	}}
+}
+
+bool check_collision_walls(int lvl, SDL_Rect rect){
+	SDL_Rect wallr;
+	
+	// check base walls
+	for(int i = 0; i<17; i++){
+		wallr.x = BaseLvlPtr[i].x;
+		wallr.y = BaseLvlPtr[i].y;
+		wallr.w = BaseLvlPtr[i].w;
+		wallr.h = BaseLvlPtr[i].h;
+
+		if(checkSDLCollision(wallr, rect)){
+			return true;
+		}
+	}
+	
+	int n;
+	if( lvl==1){
+		n = 18;
+	}
+	if( lvl==2){
+		n = 14;
+	}
+	if( lvl==3){
+		n = 25;
+	}
+	// check labyrinth walls
+	for(int i = 0; i<n; i++){
+		wallr.x = LabyrinthPtr[i].x;
+		wallr.y = LabyrinthPtr[i].y;
+		wallr.w = LabyrinthPtr[i].w;
+		wallr.h = LabyrinthPtr[i].h;
+		if(checkSDLCollision(wallr, rect)){
+			return true;
+		}
+	}
 }

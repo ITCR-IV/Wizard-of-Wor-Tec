@@ -29,7 +29,7 @@ SDL_Surface* loadSurface(SDL_Surface *screen, char img[]) {
 	return adjustedSurface;
 }
 
-bool checkCollision(SDL_Rect rect1, SDL_Rect rect2){
+bool checkSDLCollision(SDL_Rect rect1, SDL_Rect rect2){
 	bool collideX;
 	bool collideY;
 	if(rect1.x <= rect2.x){
