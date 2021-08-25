@@ -44,6 +44,11 @@ void reset_player(){
 	}
 }
 
+void hard_reset_player(){
+	terminate_player();
+	init_player();
+}
+
 void draw_player(SDL_Surface *screen, SDL_Surface *sprite){
 
 	SDL_Rect p;
