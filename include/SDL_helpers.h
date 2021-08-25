@@ -8,4 +8,5 @@ SDL_Surface* loadSurface(SDL_Surface *screen, char img[]);
 
 bool checkSDLCollision(SDL_Rect rect1, SDL_Rect rect2);
 
+SDL_Rect instantiateRect(int x, int y, int w, int h);
 #endif

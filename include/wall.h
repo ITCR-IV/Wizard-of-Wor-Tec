@@ -9,7 +9,7 @@ typedef struct wall_s {
 	int w,h;
 } Wall;
 
-static Wall* BaseLvlPtr;
+extern Wall* BaseLvlPtr;
 static Wall* LabyrinthPtr;
 
 

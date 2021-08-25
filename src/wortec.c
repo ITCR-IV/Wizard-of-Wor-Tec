@@ -8,6 +8,8 @@
 //Game elements
 #include "wall.h"
 #include "player.h"
+#include "enemy.h"
+#include "directions.h"
 
 
 #define SCREEN_WIDTH 1080	//window height
@@ -567,6 +569,12 @@ int main (int argc, char *args[]) {
 
 	// Initialize first level
 	init_labyrinth(1);
+
+	// Initialize player character
+	init_player();
+
+	// Initializa enemies
+	init_enemies();
 	
 	//render loop
 	while(quit == 0) {
@@ -576,21 +584,9 @@ int main (int argc, char *args[]) {
 
 		const Uint8 *keystate = SDL_GetKeyboardState(NULL);
 		
-		if (keystate[SDL_SCANCODE_ESCAPE]) {
-		
+		if (keystate[SDL_SCANCODE_ESCAPE]) 
 			quit = 1;
-		}
-		
-		if (keystate[SDL_SCANCODE_DOWN]) {
-			
-			move_paddle(0);
-		}
 
-		if (keystate[SDL_SCANCODE_UP]) {
-			
-			move_paddle(1);
-		}
-		
 		//draw background
 		SDL_RenderClear(renderer);
 		//SDL_FillRect(screen, NULL, 0x000000ff);
@@ -603,6 +599,8 @@ int main (int argc, char *args[]) {
 				state = 1;
 				//Initialize labyrinth
 				reset_labyrinth(state);
+				reset_player();
+				reset_enemies();
 			}
 		
 			//draw menu 
@@ -632,9 +630,22 @@ int main (int argc, char *args[]) {
 		//display the game
 		} else if (state >= 1) {
 			
+			// player movement
+			if (keystate[SDL_SCANCODE_DOWN]) 
+				move_player(DOWN, state);
+			else if (keystate[SDL_SCANCODE_UP]) 
+				move_player(UP, state);
+			else if (keystate[SDL_SCANCODE_RIGHT]) 
+				move_player(RIGHT, state);
+			else if (keystate[SDL_SCANCODE_LEFT]) 
+				move_player(LEFT, state);
+
+			// player shooting
+			if (keystate[SDL_SCANCODE_SPACE])
+				player_shoot();
+
 			//check score
 			r = check_score();
-		
 			//if either player wins, change to game over state
 			if (r == 1) {
 				
@@ -647,12 +658,29 @@ int main (int argc, char *args[]) {
 
 			//paddle ai movement
 			//move_paddle_ai();
+			//
+			//enemy movement and spawning
+			move_enemies(state);
+			spawn_enemy();
 
 			//* Move the balls for the next frame. 
 			//move_ball();
 			
+			//Move bullets
+			move_bullets(state);
+			
 			//draw level
 			draw_walls(screen, state);
+			//draw player
+			draw_player(screen, playerSprite);
+			//draw lives
+			draw_lives(screen, playerSprite);
+			//draw bullets
+			draw_bullets(screen);
+			//draw enemies
+			draw_enemies(screen, monstersSheet);
+			//draw enemy radar
+			draw_radar(screen);
 			//draw net
 			//draw_net();
 
@@ -687,6 +715,12 @@ int main (int argc, char *args[]) {
 
 	//free level data
 	terminate_labyrinth();
+
+	//free player data
+	terminate_player();
+
+	//free enemies data
+	terminate_enemies();
 
 	//free loaded images
 	SDL_FreeSurface(screen);
@@ -772,15 +806,8 @@ int init(int width, int height, int argc, char *args[]) {
 	monstersSheet = loadSurface(screen, "monsters.png");
 
 	//Load the title image
-	title = SDL_LoadBMP("title.bmp");
+	title = loadSurface(screen, "WizardTEC.png");
 
-	if (title == NULL) {
-		
-		printf("Could not Load title image! SDL_Error: %s\n", SDL_GetError());
-
-		return 1;
-	}
-	
 	//Load the numbermap image
 	numbermap = SDL_LoadBMP("numbermap.bmp");
 

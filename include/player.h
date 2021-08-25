@@ -1,6 +1,7 @@
 #ifndef PLAYER_H
 #define PLAYER_H
 
+#include <stdbool.h>
 #include "SDL.h"
 #include "directions.h"
 
@@ -12,6 +13,7 @@ typedef struct player_s {
 	enum PlayerStates state;
 	int cooldown;
 	int lives;
+	int activeBullets;
 } Player;
 
 static Player *PlayerPtr;
@@ -24,6 +26,23 @@ void reset_player();
 
 void draw_player(SDL_Surface *screen, SDL_Surface *sprite);
 
+void draw_lives(SDL_Surface *screen, SDL_Surface *sprite);
+
 void move_player(enum Direction d, int lvl);
 
+bool check_los(int x, int y, int lvl);
+
+typedef struct bullet_s {
+	int x, y;
+	enum Direction orientation;
+	bool active;
+} Bullet;
+
+static Bullet *BulletPtr;
+ 
+void player_shoot();
+
+void draw_bullets(SDL_Surface *screen);
+
+void move_bullets(int lvl);
 #endif

@@ -6,9 +6,9 @@ SDL_Surface* loadSurface(SDL_Surface *screen, char img[]) {
 	//The final adjusted image
 	SDL_Surface* adjustedSurface;
 	
-	char path[strlen("../imgs/")+strlen(img)];
+	char path[strlen("imgs/")+strlen(img)];
 
-	strcpy(path, "../imgs/");
+	strcpy(path, "imgs/");
 
 	SDL_Surface* loadedImg = IMG_Load(strcat(path,img));
 	if(!loadedImg) {
@@ -30,20 +30,25 @@ SDL_Surface* loadSurface(SDL_Surface *screen, char img[]) {
 }
 
 bool checkSDLCollision(SDL_Rect rect1, SDL_Rect rect2){
-	bool collideX;
-	bool collideY;
+	bool collideX = false;
+	bool collideY = false;
+	//printf("First rect: x=%d, y=%d, w=%d, h=%d\n",rect1.x,rect1.y,rect1.w,rect1.h);
+	//printf("Second rect: x=%d, y=%d, w=%d, h=%d\n\n",rect2.x,rect2.y,rect2.w,rect2.h);
 	if(rect1.x <= rect2.x){
-		collideX = rect2.x <= rect1.x+rect1.w;
+		collideX = rect2.x < rect1.x+rect1.w;
 	}
 	else{
-		collideX = rect1.x <= rect2.x+rect2.w;
+		collideX = rect1.x < rect2.x+rect2.w;
 	}
 	if(rect1.y <= rect2.y){
-		collideY = rect2.y <= rect1.y+rect1.w;
+		collideY = rect2.y < rect1.y+rect1.h;
+		//printf("This shouldn't get printed");
 	}
 	else{
-		collideY = rect1.y <= rect2.y+rect2.w;
+		collideY = rect1.y < rect2.y+rect2.h;
 	}
+	//if(collideX&&collideY)
+	//	printf("Collision detected!!!!!!!!!\n\n");
 	return collideX&&collideY;
 }
 
@@ -55,3 +60,4 @@ SDL_Rect instantiateRect(int x, int y, int w, int h){
 	rect.h=h;
 	return rect;
 }
+
