@@ -62,7 +62,7 @@ void spawn_enemy(){
 	EnemyPtr[enemiesSpawned].visible = true;
 	EnemyPtr[enemiesSpawned].visibilityTimer = 180;
 	EnemyPtr[enemiesSpawned].active = true;
-	spawnTimer = rrand(90,500);
+	spawnTimer = rrand(90,300);
 	enemiesSpawned++;
 }
 
@@ -223,25 +223,31 @@ void move_enemies(int lvl){
 	return; //end :)
 }
 
-bool check_collision_enemies(SDL_Rect rect){
+bool check_collision_enemies_aux(SDL_Rect rect, int iteration){
+	if(iteration>=enemiesSpawned)
+		return false;
+
+	if(!EnemyPtr[iteration].active || !EnemyPtr[iteration].visible)
+		return check_collision_enemies_aux(rect, iteration+1);
+
 	SDL_Rect enemyr;
 
-	//iterate through enemies array
-	for(int i = 0; i<enemiesSpawned; i++){
-		if(!EnemyPtr[i].active || !EnemyPtr[i].visible)
-			continue;
+	enemyr.x = EnemyPtr[iteration].x;
+	enemyr.y = EnemyPtr[iteration].y;
+	enemyr.w = 62;
+	enemyr.h = 62;
 
-		enemyr.x = EnemyPtr[i].x;
-		enemyr.y = EnemyPtr[i].y;
-		enemyr.w = 62;
-		enemyr.h = 62;
-
-		if(checkSDLCollision(enemyr, rect)){
-			return true;
-		}
+	if(checkSDLCollision(enemyr, rect)){
+		return true;
 	}
-	
-	return false;
+
+	return check_collision_enemies_aux(rect, iteration+1);
+}
+
+bool check_collision_enemies(SDL_Rect rect){
+
+	//iterate through enemies array
+	return check_collision_enemies_aux(rect, 0);
 }
 
 int get_kills(){

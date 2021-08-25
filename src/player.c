@@ -365,38 +365,43 @@ void move_bullets(int lvl){
 	return; //end :)
 }
 
-bool check_collision_bullets(SDL_Rect rect){
+bool check_collision_bullets_aux(SDL_Rect rect, int iteration, int n){
+	if(iteration >= 20)
+		return false;
+	if(n >= PlayerPtr->activeBullets)
+		return false;
+	if(!BulletPtr[iteration].active)
+		return check_collision_bullets_aux(rect, iteration+1, n);
+
 	SDL_Rect bulletr;
+
+	bulletr.x = BulletPtr[iteration].x;
+	bulletr.y = BulletPtr[iteration].y;
+
+	if(BulletPtr[iteration].orientation == UP || BulletPtr[iteration].orientation == DOWN){
+		bulletr.w = bulletWidth;
+		bulletr.h = bulletLength;
+	}
+	else{
+		bulletr.w = bulletLength;
+		bulletr.h = bulletWidth;
+	}
+
+	if(checkSDLCollision(bulletr, rect)){
+		//printf("Colliding with basic wall #%d\n",i);
+		BulletPtr[iteration].active = false;
+		PlayerPtr->activeBullets--;
+		return true;
+	}
+	return check_collision_bullets_aux(rect, iteration+1, n+1);
+}
+
+bool check_collision_bullets(SDL_Rect rect){
 
 	int n=0; //to not go over the active bullets amount for optimization
 	//iterate through bullets array
-	for(int i = 0; i<20; i++){
-		if(n >= PlayerPtr->activeBullets)
-			break;
-		if(!BulletPtr[i].active)
-			continue;
-		n++;
-		bulletr.x = BulletPtr[i].x;
-		bulletr.y = BulletPtr[i].y;
-
-		if(BulletPtr[i].orientation == UP || BulletPtr[i].orientation == DOWN){
-		bulletr.w = bulletWidth;
-		bulletr.h = bulletLength;
-		}
-		else{
-		bulletr.w = bulletLength;
-		bulletr.h = bulletWidth;
-		}
-
-		if(checkSDLCollision(bulletr, rect)){
-			//printf("Colliding with basic wall #%d\n",i);
-			BulletPtr[i].active = false;
-			PlayerPtr->activeBullets--;
-			return true;
-		}
-	}
 	
-	return false;
+	return check_collision_bullets_aux(rect, 0, n);
 }
 
 int get_lives(){

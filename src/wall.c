@@ -203,7 +203,7 @@ bool check_collision_walls_base_aux(SDL_Rect rect, int iteration){
 		return true;
 	}
 
-	check_collision_walls_base_aux(rect, iteration+1);
+	return check_collision_walls_base_aux(rect, iteration+1);
 }
 
 bool check_collision_walls_lvl_aux(SDL_Rect rect, int max, int iteration){
@@ -222,12 +222,10 @@ bool check_collision_walls_lvl_aux(SDL_Rect rect, int max, int iteration){
 		return true;
 	}
 
-	check_collision_walls_lvl_aux(rect, max, iteration+1);
+	return check_collision_walls_lvl_aux(rect, max, iteration+1);
 }
 
 bool check_collision_walls(int lvl, SDL_Rect rect){
-	SDL_Rect wallr;
-
 	// check base walls
 	if(check_collision_walls_base_aux(rect, 0))
 		return true;

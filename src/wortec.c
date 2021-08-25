@@ -258,6 +258,7 @@ int main (int argc, char *args[]) {
 			r = check_game_status();
 			if( r != 0){
 				draw_game_over();
+				SDL_Delay(100);
 				state=-1;}
 
 
