@@ -62,7 +62,7 @@ void spawn_enemy(){
 	EnemyPtr[enemiesSpawned].visible = true;
 	EnemyPtr[enemiesSpawned].visibilityTimer = 180;
 	EnemyPtr[enemiesSpawned].active = true;
-	spawnTimer = rrand(120,720);
+	spawnTimer = rrand(60,300);
 	enemiesSpawned++;
 }
 
@@ -157,6 +157,11 @@ void move_enemies(int lvl){
 				EnemyPtr[i].orientation = rrand(0,3);
 		}
 
+		//before actually moving check for being shot
+		if(check_collision_bullets(instantiateRect(EnemyPtr[i].x,EnemyPtr[i].y,62,62))){
+			EnemyPtr[i].active = false;
+			return;
+		}
 		//move forward
 		switch(EnemyPtr[i].orientation) {
 			case UP:
@@ -216,3 +221,23 @@ void move_enemies(int lvl){
 	return; //end :)
 }
 
+bool check_collision_enemies(SDL_Rect rect){
+	SDL_Rect enemyr;
+
+	//iterate through enemies array
+	for(int i = 0; i<enemiesSpawned; i++){
+		if(!EnemyPtr[i].active || !EnemyPtr[i].visible)
+			continue;
+
+		enemyr.x = EnemyPtr[i].x;
+		enemyr.y = EnemyPtr[i].y;
+		enemyr.w = 62;
+		enemyr.h = 62;
+
+		if(checkSDLCollision(enemyr, rect)){
+			return true;
+		}
+	}
+	
+	return false;
+}

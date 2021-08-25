@@ -39,10 +39,14 @@ typedef struct bullet_s {
 } Bullet;
 
 static Bullet *BulletPtr;
+static int bulletLength = 18;
+static int bulletWidth = 5;
  
 void player_shoot();
 
 void draw_bullets(SDL_Surface *screen);
 
 void move_bullets(int lvl);
+
+bool check_collision_bullets(SDL_Rect rect);
 #endif

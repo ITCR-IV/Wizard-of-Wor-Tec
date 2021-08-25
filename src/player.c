@@ -2,6 +2,7 @@
 
 #include "SDL_helpers.h"
 #include "wall.h"
+#include "enemy.h"
 
 void init_player(){
 	// MUST BE CALLED AFTER INSTANTIATING LVL BECAUSE OF THE CHANGE OF WALL WIDTH
@@ -112,6 +113,14 @@ void move_player(enum Direction d, int lvl){ //d is the direction the player is 
 			PlayerPtr->orientation = UP;}
 		return;
 	}
+	
+	// check collision with enemies
+	if(check_collision_enemies(instantiateRect(PlayerPtr->x,PlayerPtr->y,62,62))){
+		PlayerPtr->lives--;
+		reset_player();
+		return;
+	}
+
 	//then check if player already moving in a direction
 	if(PlayerPtr->state == MOVING){
 		//printf("moving in direction: %d, while holding %d\n",PlayerPtr->orientation,d);
@@ -146,6 +155,7 @@ void move_player(enum Direction d, int lvl){ //d is the direction the player is 
 			}
 		}
 	}
+	
 
 	//he is either static in a tile and can move anywhere or he was just forced into this state from clipping and this was called again
 	if(PlayerPtr->state == STATIC){
@@ -155,6 +165,7 @@ void move_player(enum Direction d, int lvl){ //d is the direction the player is 
 		PlayerPtr->orientation = d;
 		PlayerPtr->state = MOVING;
 	}
+
 
 	// finally move the player forward
 	switch(PlayerPtr->orientation) {
@@ -235,7 +246,7 @@ void player_shoot(){
 			BulletPtr[i].active = true;
 			BulletPtr[i].orientation = PlayerPtr->orientation;
 			// bullet length is going to be 25
-			int bulletLength = 18;
+			
 			switch(PlayerPtr->orientation) {
 			case UP:
 				BulletPtr[i].x = PlayerPtr->x+27;
@@ -265,10 +276,6 @@ void player_shoot(){
 void draw_bullets(SDL_Surface *screen){
 	SDL_Rect b;
 	
-	//define bullet length and width
-	int bulletLength = 18;
-	int bulletWidth = 5;
-
 	int n=0; //to not go over the active bullets amount for optimization
 	//iterate through bullets array
 	for(int i = 0; i<20; i++){
@@ -309,10 +316,6 @@ void move_bullets(int lvl){
 			continue;
 		n++;
 				
-		//define bullet length and width
-		int bulletLength = 18;
-		int bulletWidth = 5;
-
 		// if against a wall then yeet bullet out of existence
 		if(BulletPtr[i].orientation == UP || BulletPtr[i].orientation == DOWN){
 			if(check_collision_walls(lvl, instantiateRect(BulletPtr[i].x, BulletPtr[i].y, bulletWidth, bulletLength))){
@@ -351,4 +354,38 @@ void move_bullets(int lvl){
 		
 	}
 	return; //end :)
+}
+
+bool check_collision_bullets(SDL_Rect rect){
+	SDL_Rect bulletr;
+
+	int n=0; //to not go over the active bullets amount for optimization
+	//iterate through bullets array
+	for(int i = 0; i<20; i++){
+		if(n >= PlayerPtr->activeBullets)
+			break;
+		if(!BulletPtr[i].active)
+			continue;
+		n++;
+		bulletr.x = BulletPtr[i].x;
+		bulletr.y = BulletPtr[i].y;
+
+		if(BulletPtr[i].orientation == UP || BulletPtr[i].orientation == DOWN){
+		bulletr.w = bulletWidth;
+		bulletr.h = bulletLength;
+		}
+		else{
+		bulletr.w = bulletLength;
+		bulletr.h = bulletWidth;
+		}
+
+		if(checkSDLCollision(bulletr, rect)){
+			//printf("Colliding with basic wall #%d\n",i);
+			BulletPtr[i].active = false;
+			PlayerPtr->activeBullets--;
+			return true;
+		}
+	}
+	
+	return false;
 }

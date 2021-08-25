@@ -639,6 +639,8 @@ int main (int argc, char *args[]) {
 				move_player(RIGHT, state);
 			else if (keystate[SDL_SCANCODE_LEFT]) 
 				move_player(LEFT, state);
+			else
+				move_player(NOWHERE, state);
 
 			// player shooting
 			if (keystate[SDL_SCANCODE_SPACE])

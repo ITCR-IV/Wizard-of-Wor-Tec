@@ -35,4 +35,6 @@ void draw_radar(SDL_Surface *screen);
 
 void move_enemies(int lvl);
 
+bool check_collision_enemies(SDL_Rect rect);
+
 #endif
