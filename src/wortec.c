@@ -145,10 +145,11 @@ int main (int argc, char *args[]) {
 		if (keystate[SDL_SCANCODE_ESCAPE]) 
 			quit = 1;
 
-		//draw background
-		SDL_RenderClear(renderer);
-		//SDL_FillRect(screen, NULL, 0x000000ff);
-		draw_bg();
+		if (state != -1){
+			//draw background
+			SDL_RenderClear(renderer);
+			draw_bg();
+		}
 		
 		//display main menu
 		if (state == 0 ) {
@@ -233,6 +234,8 @@ int main (int argc, char *args[]) {
 			draw_enemies(screen, monstersSheet);
 			//draw enemy radar
 			draw_radar(screen);
+			//draw kills
+			draw_kills(screen, numbermap);
 
 		}
 	

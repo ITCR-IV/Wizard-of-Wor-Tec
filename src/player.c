@@ -311,7 +311,7 @@ void move_bullets(int lvl){
 	//remove 1 cd from player
 	if(PlayerPtr->cooldown > 0)
 		PlayerPtr->cooldown--;
-	int speed = 15;
+	int speed = bulletLength;
 
 	int n = 0;
 	for(int i = 0; i < 20; i++){

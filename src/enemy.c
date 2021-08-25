@@ -62,7 +62,7 @@ void spawn_enemy(){
 	EnemyPtr[enemiesSpawned].visible = true;
 	EnemyPtr[enemiesSpawned].visibilityTimer = 180;
 	EnemyPtr[enemiesSpawned].active = true;
-	spawnTimer = rrand(60,300);
+	spawnTimer = rrand(90,500);
 	enemiesSpawned++;
 }
 
@@ -94,6 +94,8 @@ void draw_radar(SDL_Surface *screen){
 
 	for(int i = 0; i < enemiesSpawned; i++){
 		if(!EnemyPtr[i].active)
+			continue;
+		if(EnemyPtr[i].x < 2*72+4 || EnemyPtr[i].x > 12*72+4)
 			continue;
 
 		e.x = 430+((EnemyPtr[i].x-4)/72-2)*20;
@@ -141,12 +143,12 @@ void move_enemies(int lvl){
 			if(check_los(EnemyPtr[i].x,EnemyPtr[i].y,lvl)){
 				EnemyPtr[i].visible = true; // if in line of sight reset the enemy to be visible
 				// countdown timer
-				EnemyPtr[i].visibilityTimer = 180;
+				EnemyPtr[i].visibilityTimer = 150;
 			}
 		}
 		
 		//now that visibility is taken care for, do actual movement
-		int speed = 4 + pow(2,EnemyPtr[i].type); // speed must be a factor of 72 (2^3*3^2)
+		int speed = (4 + pow(2,EnemyPtr[i].type))/2; // speed must be a factor of 72 (2^3*3^2)
 
 		//random chance to turn when "snapping" to grid
 		if(EnemyPtr[i].orientation == UP || EnemyPtr[i].orientation == DOWN){
@@ -240,4 +242,25 @@ bool check_collision_enemies(SDL_Rect rect){
 	}
 	
 	return false;
+}
+
+int get_kills(){
+	int k = 0;
+	for(int i=0; i<enemiesSpawned; i++){
+		if(!EnemyPtr[i].active)
+			k++;
+	}
+	return k;
+}
+
+void draw_kills(SDL_Surface *screen, SDL_Surface *numbermap){
+
+	SDL_Rect src = instantiateRect(0, 0, 64, 64);
+	src.x += 64*get_kills();
+
+	SDL_Rect dest = instantiateRect(720, 570, 64, 64);
+
+	int r = SDL_BlitSurface(numbermap, &src, screen, &dest);
+	if(r != 0)
+		printf("Error drawing kills counter");
 }

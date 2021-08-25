@@ -37,4 +37,7 @@ void move_enemies(int lvl);
 
 bool check_collision_enemies(SDL_Rect rect);
 
+int get_kills();
+
+void draw_kills(SDL_Surface *screen, SDL_Surface *numbermap);
 #endif
