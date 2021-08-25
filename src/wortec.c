@@ -37,6 +37,24 @@ static SDL_Surface *end;
 //textures
 SDL_Texture *screen_texture;
 
+int check_game_status(){
+	int l = get_lives();
+	int k = get_kills();
+	
+	if(k>=9)
+		return 1;
+	if(l<=0)
+		return -1;
+	return 0;
+}
+
+void draw_game_over(){
+	SDL_Rect src = instantiateRect(0, 0, end->w, end->h);
+	SDL_Rect dest = instantiateRect(0, 0, screen->w, screen-> h);
+
+	SDL_BlitSurface(end, &src, screen, &dest);
+}
+
 void draw_bg(){
 	SDL_Rect src;
 	SDL_Rect dest;
@@ -145,7 +163,7 @@ int main (int argc, char *args[]) {
 		if (keystate[SDL_SCANCODE_ESCAPE]) 
 			quit = 1;
 
-		if (state != -1){
+		if (state >= 0){
 			//draw background
 			SDL_RenderClear(renderer);
 			draw_bg();
@@ -236,6 +254,12 @@ int main (int argc, char *args[]) {
 			draw_radar(screen);
 			//draw kills
 			draw_kills(screen, numbermap);
+
+			r = check_game_status();
+			if( r != 0){
+				draw_game_over();
+				state=-1;}
+
 
 		}
 	
@@ -351,24 +375,10 @@ int init(int width, int height, int argc, char *args[]) {
 	title = loadSurface(screen, "WizardTEC.png");
 
 	//Load the numbermap image
-	numbermap = SDL_LoadBMP("numbermap.bmp");
-
-	if (numbermap == NULL) {
-		
-		printf("Could not Load numbermap image! SDL_Error: %s\n", SDL_GetError());
-
-		return 1;
-	}
+	numbermap = loadSurface(screen, "numbermap.bmp");
 	
 	//Load the gameover image
-	end = SDL_LoadBMP("gameover.bmp");
-
-	if (end == NULL) {
-		
-		printf("Could not Load title image! SDL_Error: %s\n", SDL_GetError());
-
-		return 1;
-	}
+	end = loadSurface(screen, "GameOver.png");
 	
 	// Set the title colourkey. 
 	Uint32 colorkey = SDL_MapRGB(title->format, 255, 0, 255);

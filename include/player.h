@@ -26,6 +26,8 @@ void reset_player();
 
 void hard_reset_player();
 
+int get_lives();
+
 void draw_player(SDL_Surface *screen, SDL_Surface *sprite);
 
 void draw_lives(SDL_Surface *screen, SDL_Surface *sprite);

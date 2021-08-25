@@ -187,21 +187,50 @@ void draw_walls(SDL_Surface *screen, int lvl) {
 	}}
 }
 
+bool check_collision_walls_base_aux(SDL_Rect rect, int iteration){
+	if(iteration >= 17)
+		return false;
+
+	SDL_Rect wallr;
+
+	wallr.x = BaseLvlPtr[iteration].x;
+	wallr.y = BaseLvlPtr[iteration].y;
+	wallr.w = BaseLvlPtr[iteration].w;
+	wallr.h = BaseLvlPtr[iteration].h;
+
+	if(checkSDLCollision(wallr, rect)){
+		//printf("Colliding with basic wall #%d\n",i);
+		return true;
+	}
+
+	check_collision_walls_base_aux(rect, iteration+1);
+}
+
+bool check_collision_walls_lvl_aux(SDL_Rect rect, int max, int iteration){
+	if(iteration >= max)
+		return false;
+
+	SDL_Rect wallr;
+
+	wallr.x = LabyrinthPtr[iteration].x;
+	wallr.y = LabyrinthPtr[iteration].y;
+	wallr.w = LabyrinthPtr[iteration].w;
+	wallr.h = LabyrinthPtr[iteration].h;
+
+	if(checkSDLCollision(wallr, rect)){
+		//printf("Colliding with basic wall #%d\n",i);
+		return true;
+	}
+
+	check_collision_walls_lvl_aux(rect, max, iteration+1);
+}
+
 bool check_collision_walls(int lvl, SDL_Rect rect){
 	SDL_Rect wallr;
 
 	// check base walls
-	for(int i = 0; i<17; i++){
-		wallr.x = BaseLvlPtr[i].x;
-		wallr.y = BaseLvlPtr[i].y;
-		wallr.w = BaseLvlPtr[i].w;
-		wallr.h = BaseLvlPtr[i].h;
-
-		if(checkSDLCollision(wallr, rect)){
-			//printf("Colliding with basic wall #%d\n",i);
-			return true;
-		}
-	}
+	if(check_collision_walls_base_aux(rect, 0))
+		return true;
 	
 	int n;
 	if( lvl==1){
@@ -214,14 +243,9 @@ bool check_collision_walls(int lvl, SDL_Rect rect){
 		n = 25;
 	}
 	// check labyrinth walls
-	for(int i = 0; i<n; i++){
-		wallr.x = LabyrinthPtr[i].x;
-		wallr.y = LabyrinthPtr[i].y;
-		wallr.w = LabyrinthPtr[i].w;
-		wallr.h = LabyrinthPtr[i].h;
-		if(checkSDLCollision(wallr, rect)){
-			return true;
-		}
-	}
+	if(check_collision_walls_lvl_aux(rect, n, 0))
+		return true;
+
 	return false;
 }
+

@@ -50,6 +50,8 @@ void hard_reset_player(){
 }
 
 void draw_player(SDL_Surface *screen, SDL_Surface *sprite){
+	if(PlayerPtr->lives <= 0)
+		return;
 
 	SDL_Rect p;
 	SDL_Rect dest;
@@ -122,6 +124,8 @@ void move_player(enum Direction d, int lvl){ //d is the direction the player is 
 	// check collision with enemies
 	if(check_collision_enemies(instantiateRect(PlayerPtr->x,PlayerPtr->y,62,62))){
 		PlayerPtr->lives--;
+		if(PlayerPtr->lives <= 0)
+			return;
 		reset_player();
 		return;
 	}
@@ -393,4 +397,8 @@ bool check_collision_bullets(SDL_Rect rect){
 	}
 	
 	return false;
+}
+
+int get_lives(){
+	return PlayerPtr->lives;
 }
